@@ -1,0 +1,106 @@
+                            ------------------
+                            README (locality)
+                            ------------------
+Created by: Emily Gjertsson (egjert01) and Minnie Xie (mxie03)
+            locality (hw3)
+            COMP40
+            Oct 12 2020
+
+                            -- Implementation --
+    We believe we have completed the project (in all aspects) according
+    to the spec. We have also implemented some of the extra credit (rotate270,
+    ...)
+   Correct: Uarray2b Implementation and rotation of ppm image file. Also flip
+            ppm image file both vertically and horizontally
+   Incorrect: Nothing to our knowledge
+
+Collaborated with: Sejal, Isabella, Patrick, Gustavo, Miles,
+                   Adam, Alex,  Allison
+                   <3 <3
+
+Time spent: ~40hrs (including design)
+
+                            -- ARCHITECTURE --
+    1. UArray2b: We represented our blocked version of the UArray2 as a struct
+                 which holds information about the dimensions of the blocked
+                 array (the height, width, size of what's being stored, and the
+                 blocksize), and a UArray2_T which is the essence of the
+                 UArray2b. The UArray2 will store a Hanson UArray_T in every
+                 index. Each Index in the UArray2_T represents a block, and
+                 therefore the inner UArray_Ts will be the length of
+                 blocksize * blocksize. We use the UArray2 mapping function to
+                 fill the array in row-major order. If the blocksize is
+                 specified such that there is padding along the right and
+                 bottom edges (i.e. not every cell is storing something), our
+                 mapping function has a simple check to ensure those cells
+                 are not visited.
+
+
+    2. A2Plain: This file contains a method suite with function pointers
+                associated with UArray2.c (provided by comp40). It allows for
+                polymorphism in what kinds of 2D array is takes (UArray2 or
+                UArray2b).
+
+
+    3. ppmtrans: This file represents a ppm file as either a UArray2 or a
+                UArray2b (depending on mapping type) to transform the image.
+                The main function handles commands given by the user and
+                sets the mapping type with the method suite in a2plain or
+                a2blocked. A separate struct trans_supplies is used to pass
+                along the new UArray2(b) and updated method information to
+                be able to access the memory needed to transform an image.
+
+
+                        -- EXPERIMENTAL (part E) --
+---------------------------------------------------------------------------
+Computer: vm-hw07, Intel(R) Xeon(R) Silver 4214Y CPU @ 2.20GHz
+CPU MHz: 2194.844
+File Name: mobo.jpg
+Image size: 8160p x 6120p (149,817,617 bytes)
+---------------------------------------------------------------------------
+Rotation(degrees)   Map Type    Total CPU time(ns)    time / pixel(ns)
+---------------------------------------------------------------------------
+rotate0             row-major           --                      --
+                    col-major           --                      --
+                    block-major         --                      --
+
+rotate90            row-major         4756714765                 95
+                    col-major         5650113819                113
+                    block-major       4952405203                 99
+
+rotate180           row-major         2254800168                 45
+                    col-major         9338344002                187
+                    block-major       5536997966                111
+
+rotate270           row-major         4749231527                 95
+                    col-major         5303263310                106
+                    block-major       4935871295                 99
+---------------------------------------------------------------------------
+
+
+Analysis:
+
+Below your table, discuss patterns you see in the results: for example,
+do certain rotations run faster when using blocked arrays vs. plain?
+
+ - The quickest rotation was a 180 degree rotation with row-major mapping. 
+ - The slowest rotation was a 180 degree rotation with column-major mapping.
+ - The quickest average mapping type was row-major mapping at ~78.333ns/pixel.
+ - The slowest average mapping type was column-major mapping at ~135.3ns/pixel.
+ - Block-major mapping is relatively consistent with how much time it takes
+   regardless of rotation degree.
+
+Since rotating an image 90 or 270 degrees involves switching the width and
+height, there are more small calculations being done which cumulatively
+increases runtime and makes rotations take longer.
+In our implementation, we model the UArray2b as a UArray2 containing UArrays.
+This explains why row-major mapping is always more efficient than block-major
+mapping, since there are fewer steps involved in accessing an element based
+on its coordinates.
+Column-major mapping performs the worst, as expected, given that the
+uarray2.c implementation stores rows as the element in the outer Uarray.
+Furthermore, row-major performs the best in the rotate-180 instance because the
+program transfers the image one row at a time, so the row we're accessing and
+writing to will be stored in the cache at the same time. Therefore, even if the
+cache only had space to hold two blocks (two rows) the number of times we need
+to go to main memory is only the height of the image.
