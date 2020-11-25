@@ -9,13 +9,11 @@ Created by: Minnie Xie (mxie03) and Emily Gjertsson (egjert01)
 Implementation:
     We believe we have completed the project (in all aspects) according
     to the spec.
-    Correct: Finding matches
-             Printing correct filename/linenum
-             Calculating correct brightness
-    Incorrect: As far as we know, everything is completed to what's required
-               by the spec
 
-Collaborated with: Benjamin, Alex, Gustavo, Gustavo's roommate, Isabella,
-                   Sejal, Cindy, Michael, Patrick, Julia
-                        <3 <3
 Time spent: according to zoom logs... ~ 41 hrs (including design)
+
+Assignment Description:
+In this assignment you will design, build and test two application programs 
+and one supporting file input routine. The first program reports the 
+average brightness of an image file. The second program reports similarities 
+in file data, and it uses an input routine called readaline that you will implement. 
