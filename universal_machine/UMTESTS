@@ -1,0 +1,12 @@
+halt.um
+halt-verbose.um
+add.um
+print-six.um
+mul-div.um
+nand.um
+cond-move.um
+map-unmap.um
+io.um
+loadp-segloadstore.um
+pcounter.um
+extended-map-unmap.um

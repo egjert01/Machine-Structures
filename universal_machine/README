@@ -1,0 +1,89 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ *                               README                                *
+ *    Branch Seidenman (bseide01) and Emily Gjertsson (egjert01)       *
+ *                             11/23/2020                              *
+ *                                                                     *
+ *                              UM (hw6)                               *
+ *                                                                     *
+ * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
+Help Received: general thanks to TAs that we received help from!
+               we use some code from the lab (like um_opcode struct and some
+               unit tests).
+
+We believe everything has been correctly implemented. There are no known bugs.
+
+Architecture/Modules:
+        um : Main driver of the Universal Machine, responsible for reading 
+                and executing intructions from a given file. Keeps 
+                implementation of um a secret.
+
+        instructions : Called from the um with instruction information 
+                including opcode, registers, and a value. Instructions
+                module executes the instructions. Calls memory
+                module for segment/register access when needed.
+                Keeps how instructions are executed a secret.
+
+        memory : Responsible for replicating a Universal Machine's memory, 
+                with 8 32-bit registers and segmented memory. Keeps how
+                memory is actually implemented (segments, two sequences, 
+                registers, an array) a secret.
+
+Design Changes:
+        Overall, we had no *major* changes from our original design plan. We
+        did recieve feedback on how we were storing our program counter, as 
+        well as implementing our unmapped sequence as a stack instead of a 
+        queue as we had proposed. We made those changes, and now store our 
+        program counter in our segment structure (which also holds the mapped 
+        and unmapped sequences and next available index), and use a stack 
+        implementation instead of a queue.
+
+Time:
+        50 million instructions are executed in roughly 4.61 seconds. We know
+        this because midmark.um is ~80 million instructions, and runs in ~7.37
+        seconds, so we divided 7.37/80m, to get seconds per instruction, then
+        multiplied that number by 50m.
+
+UM unit tests: 
+        halt : simply tests the halt instruction by creating a .um with just
+                the halt command (lab)
+        halt-verbose : tests the halt instruction, outputs "bad" if halt is not
+                functioning as expected (lab)
+        add : tests loadval, add, and ouput by outputting the sum calculated
+        print-six : similar to the add test, with different values. Diff with
+                "6". (lab)
+        mul-div : tests the multiply and divide instructions by loading 
+                values and multiplying and dividing them, and outputting the 
+                result. 
+        nand : tests the functionality of the nand instruction by loading 
+                values, r3 is set to ~(110 & 108). Then r4 is set to ~(r3).
+                Output 108 (l). If the output is not l, the nand didn't work.
+        cond-move : tests conditional move instruction by loading 0 into rc,
+                100 into ra, and 120 into rb. Then we execute cond move
+                and output ra and ensure no change occured, then we
+                load 1 into rc and output ra and ensure a change did occur.
+        map-unmap : tests our map/unmap functions as well as our ID 
+                functionality by repeatedly mapping, unmapping, and 
+                remapping segments.
+        io : tests the input and output instructions by simply reading in 
+               abc123 from io.0 and outputting the read in values. Diff with
+               "abc123".
+        loadp-segloadstore : test that segment load, segment store, and load 
+                program are working by loading bitpacked instructions into 
+                registers, storing those values into a second segment, and 
+                calling load program with the new segment as segment 0. This
+                updated segment 0 should then execute an addition and output 
+                the resulting sum.
+        pcounter : test that changing the program counter works by making a 
+                short list of instructions (which add 5 every time). loadprog
+                is called which resulted in an infinite loop (which means that
+                changing the program counter worked). We then added a 
+                conditional move to skip over the load program instruction so 
+                that our test would not loop infinitely when called.
+        extended-map-unmap : an extended, longer version of our above
+                map-unmap unit test.
+
+Hours:
+        Analyzing Assignment (time spent before design): 2 hours
+        Preparing Design: 8 hours
+        Solving Problems (time spent after design): 20 hours
